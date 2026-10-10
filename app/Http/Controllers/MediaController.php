@@ -21,6 +21,7 @@ class MediaController extends Controller
         $filters = $request->only(['search', 'project', 'type', 'folder', 'usage']);
 
         $media = MediaFile::query()
+            ->with('project:id,name')
             ->withCount('posts')
             ->addSelect(['target_count' => PostPlatformTarget::selectRaw('count(*)')
                 ->where(fn ($q) => $q->whereColumn('media_file_id', 'media_files.id')->orWhereColumn('thumbnail_media_id', 'media_files.id'))])

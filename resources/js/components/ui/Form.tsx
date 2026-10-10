@@ -1,8 +1,10 @@
 import { forwardRef, type InputHTMLAttributes, type LabelHTMLAttributes, type SelectHTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
+const width = (className?: string) => (className && /(^|\s)(w-|min-w-)/.test(className) ? '' : 'w-full');
+
 const fieldBase =
-    'w-full rounded-lg border bg-surface-900 px-3 text-sm text-slate-100 placeholder:text-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/40 disabled:opacity-60';
+    'rounded-lg border bg-surface-900 px-3 text-sm text-slate-100 placeholder:text-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500/40 disabled:opacity-60';
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement> & { invalid?: boolean }>(
     function Input({ className, invalid, ...props }, ref) {
@@ -11,6 +13,7 @@ export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputE
                 ref={ref}
                 className={cn(
                     fieldBase,
+                    width(className),
                     'h-10',
                     invalid ? 'border-rose-500/70' : 'border-surface-700 focus:border-brand-500',
                     className,
@@ -25,7 +28,7 @@ export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputE
 export function Select({ className, invalid, children, ...props }: SelectHTMLAttributes<HTMLSelectElement> & { invalid?: boolean }) {
     return (
         <select
-            className={cn(fieldBase, 'h-10', invalid ? 'border-rose-500/70' : 'border-surface-700 focus:border-brand-500', className)}
+            className={cn(fieldBase, width(className), 'h-10', invalid ? 'border-rose-500/70' : 'border-surface-700 focus:border-brand-500', className)}
             aria-invalid={invalid || undefined}
             {...props}
         >
