@@ -251,6 +251,9 @@ vendor\bin\pint --test  # PHP kod stili
 
 | Sorun | Çözüm |
 | --- | --- |
+| `PHP bulunamadı` ama PHP kurulu | Betik PATH'e ek olarak XAMPP, Laragon, WAMP, Herd, php.new, Scoop, Chocolatey ve `C:\php` klasörlerini arar. Yine bulamazsa yolu verin: `install.bat "C:\xampp\php\php.exe"` (bulunan yol `.php-path` dosyasına kaydedilir; `start.bat` de onu kullanır). |
+| PHP 8.2 veya eski bulundu | Laravel 13 için PHP **8.3+** gerekir. XAMPP/Laragon'da 8.3+ sürümü seçin veya PowerShell'de: `Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://php.new/install/windows/8.4'))` |
+| `Composer bulunamadı` | Gerekmez: `install.bat` resmi `composer.phar` dosyasını getcomposer.org'dan indirir ve SHA-256 ile doğrular (`scripts\windows\bin`). |
 | `could not find driver` | `php.ini`'de `extension=pdo_sqlite` ve `extension=sqlite3` satırlarını açın. |
 | Video yüklenmiyor (boyut) | Paneli `start.bat` ile başlatın (2 GB sınırla açar) veya `php.ini`'de `upload_max_filesize` / `post_max_size` değerlerini artırın. |
 | Planlı paylaşım çalışmadı | Bilgisayar açık mıydı? `start.bat` pencereleri açık mı? Ayarlar → Sistem durumu → Zamanlayıcı son çalışma zamanı. |

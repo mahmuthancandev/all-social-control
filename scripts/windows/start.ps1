@@ -7,8 +7,14 @@ param(
     [int]$Port = 8000
 )
 $ErrorActionPreference = 'Stop'
-$Root = Resolve-Path (Join-Path $PSScriptRoot '..\..')
+. (Join-Path $PSScriptRoot 'common.ps1')
+$Root = $script:Root
 Set-Location $Root
+
+# PHP PATH'te olmasa da bulunur; açılan pencereler bu PATH'i devralır.
+$php = Find-Php
+if (-not $php -or -not $php.Usable) { Show-PhpHelp; exit 1 }
+Use-Php $php
 
 if (-not (Test-Path '.env')) {
     Write-Host '.env bulunamadı. Önce install.bat çalıştırın.' -ForegroundColor Red

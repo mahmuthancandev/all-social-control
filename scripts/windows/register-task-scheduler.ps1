@@ -5,7 +5,8 @@
 param([switch]$Remove)
 $ErrorActionPreference = 'Stop'
 $TaskName = 'SocialHub Scheduler'
-$Root = Resolve-Path (Join-Path $PSScriptRoot '..\..')
+. (Join-Path $PSScriptRoot 'common.ps1')
+$Root = $script:Root
 
 if ($Remove) {
     Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false -ErrorAction SilentlyContinue
@@ -13,7 +14,9 @@ if ($Remove) {
     exit 0
 }
 
-$php = (Get-Command php).Source
+$found = Find-Php
+if (-not $found -or -not $found.Usable) { Show-PhpHelp; exit 1 }
+$php = $found.Path
 $action = New-ScheduledTaskAction -Execute $php -Argument 'artisan schedule:run' -WorkingDirectory $Root
 $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 1)
 $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -MultipleInstances IgnoreNew -ExecutionTimeLimit (New-TimeSpan -Minutes 10)

@@ -1,9 +1,11 @@
 ﻿# SocialHub - Windows ilk kurulum
-# Kullanım: kök klasörde install.bat dosyasına çift tıklayın
-#           veya: powershell -ExecutionPolicy Bypass -File scripts\windows\install.ps1
+# Kullanım: install.bat                      (PHP otomatik aranır)
+#           install.bat "C:\xampp\php\php.exe"  (PHP yolunu elle verin)
+param([string]$PhpPath)
 $ErrorActionPreference = 'Stop'
-$Root = Resolve-Path (Join-Path $PSScriptRoot '..\..')
-Set-Location $Root
+. (Join-Path $PSScriptRoot 'common.ps1')
+Set-Location $script:Root
+if ($PhpPath) { $env:SOCIALHUB_PHP = $PhpPath }
 
 function Step($n, $msg) { Write-Host "`n[$n/10] $msg" -ForegroundColor Cyan }
 function Run($exe, [string[]]$argList) {
@@ -13,13 +15,22 @@ function Run($exe, [string[]]$argList) {
 
 try {
     Step 1 'Sistem gereksinimleri kontrol ediliyor'
-    & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'check-requirements.ps1')
+    $checkArgs = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $PSScriptRoot 'check-requirements.ps1'))
+    if ($PhpPath) { $checkArgs += @('-PhpPath', $PhpPath) }
+    & powershell @checkArgs
     if ($LASTEXITCODE -ne 0) { throw 'Gereksinimler karşılanmıyor.' }
 
-    Step 2 'PHP / Composer / Node sürümleri doğrulandı'
+    Step 2 'PHP / Composer / Node sürümleri doğrulanıyor'
+    $php = Find-Php
+    if (-not $php -or -not $php.Usable) { Show-PhpHelp; throw 'PHP 8.3+ bulunamadı.' }
+    Use-Php $php
+    Write-Host "  PHP: $($php.Path) ($($php.Version))"
+    $composer = Find-Composer
+    if (-not $composer) { $composer = Install-ComposerPhar }
+    Write-Host "  Composer: $($composer.Path)"
 
     Step 3 'Composer bağımlılıkları kuruluyor'
-    Run 'composer' @('install', '--no-interaction', '--prefer-dist')
+    Invoke-Composer $composer @('install', '--no-interaction', '--prefer-dist')
 
     Step 4 '.env dosyası hazırlanıyor'
     if (-not (Test-Path '.env')) {
@@ -31,7 +42,7 @@ try {
     }
 
     Step 5 'SQLite veritabanı oluşturuluyor'
-    $db = Join-Path $Root 'database\database.sqlite'
+    $db = Join-Path $script:Root 'database\database.sqlite'
     if (-not (Test-Path $db)) { New-Item -ItemType File -Path $db | Out-Null; Write-Host "  Oluşturuldu: $db" }
     else { Write-Host '  Veritabanı zaten var, korunuyor.' }
 
