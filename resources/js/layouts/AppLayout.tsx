@@ -1,5 +1,5 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { ChevronDown, KeyRound, LogOut, Menu, X } from 'lucide-react';
+import { ArrowLeft, Bell, ChevronDown, KeyRound, LogOut, Menu, X } from 'lucide-react';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Badge, DemoBadge } from '@/components/ui/Badge';
 import { useToast } from '@/components/ui/Toast';
@@ -9,7 +9,9 @@ import type { SharedProps } from '@/types';
 
 interface AppLayoutProps {
     title: string;
-    description?: string;
+    description?: ReactNode;
+    badge?: ReactNode;
+    back?: { href: string; label: string };
     actions?: ReactNode;
     children: ReactNode;
 }
@@ -37,26 +39,19 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
     const { url, props } = usePage<SharedProps>();
     const isAdmin = props.auth.user?.is_admin ?? false;
     const items = navigation.filter((item) => !item.adminOnly || isAdmin);
+    const path = url.split('?')[0];
+
+    const isActive = (href: string) => {
+        if (href === '/posts') return path === '/posts' || (/^\/posts\/\d+/.test(path));
+        return path === href || path.startsWith(`${href}/`);
+    };
 
     return (
-        <nav className="flex h-full flex-col gap-1 overflow-y-auto px-3 pb-4">
+        <nav className="flex h-full flex-col gap-0.5 overflow-y-auto px-3 pb-4">
             {items.map((item) => {
                 const Icon = item.icon;
-                const active = item.href !== null && (url === item.href || url.startsWith(`${item.href}/`) || url.startsWith(`${item.href}?`));
-
-                if (item.href === null) {
-                    return (
-                        <span
-                            key={item.label}
-                            className="flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-500"
-                            title={`Bu modül Aşama ${item.stage} kapsamında geliştirilecek.`}
-                        >
-                            <Icon className="size-4 shrink-0" />
-                            <span className="flex-1 truncate">{item.label}</span>
-                            <span className="rounded bg-surface-800 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">A{item.stage}</span>
-                        </span>
-                    );
-                }
+                const active = isActive(item.href);
+                const count = item.count ? props.counts?.[item.count] ?? 0 : 0;
 
                 return (
                     <Link
@@ -69,7 +64,8 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                         )}
                     >
                         <Icon className={cn('size-4 shrink-0', active ? 'text-brand-300' : 'text-slate-400 group-hover:text-slate-200')} />
-                        <span className="truncate">{item.label}</span>
+                        <span className="flex-1 truncate">{item.label}</span>
+                        {count > 0 && <span className="rounded-full bg-brand-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-brand-200 tabular-nums">{count > 99 ? '99+' : count}</span>}
                     </Link>
                 );
             })}
@@ -126,8 +122,8 @@ function UserMenu() {
     );
 }
 
-export default function AppLayout({ title, description, actions, children }: AppLayoutProps) {
-    const { app } = usePage<SharedProps>().props;
+export default function AppLayout({ title, description, badge, back, actions, children }: AppLayoutProps) {
+    const { app, counts } = usePage<SharedProps>().props;
     const [mobileOpen, setMobileOpen] = useState(false);
     useFlashToasts();
 
@@ -166,19 +162,35 @@ export default function AppLayout({ title, description, actions, children }: App
                     </button>
                     <div className="flex flex-1 items-center gap-2">
                         {app.demo_mode && <DemoBadge />}
-                        {app.demo_mode && <span className="hidden text-xs text-slate-500 md:inline">Gerçek API bağlantısı yok — demo modu</span>}
+                        {app.demo_mode && <span className="hidden text-xs text-slate-500 md:inline">DEMO etiketli veriler simülasyondur</span>}
                     </div>
                     <Badge tone="neutral" className="hidden sm:inline-flex">{app.timezone}</Badge>
+                    <Link href="/notifications" className="relative rounded-lg p-2 text-slate-300 hover:bg-surface-800 hover:text-white" aria-label="Bildirimler">
+                        <Bell className="size-5" />
+                        {(counts?.notifications ?? 0) > 0 && (
+                            <span className="absolute top-1 right-1 flex min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white">
+                                {counts!.notifications > 9 ? '9+' : counts!.notifications}
+                            </span>
+                        )}
+                    </Link>
                     <UserMenu />
                 </header>
 
-                <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-8">
+                <main className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6 lg:py-8">
                     <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                        <div>
-                            <h1 className="text-2xl font-semibold tracking-tight text-white">{title}</h1>
+                        <div className="min-w-0">
+                            {back && (
+                                <Link href={back.href} className="mb-2 inline-flex items-center gap-1 text-xs text-slate-400 hover:text-white">
+                                    <ArrowLeft className="size-3.5" /> {back.label}
+                                </Link>
+                            )}
+                            <h1 className="flex flex-wrap items-center gap-2 text-2xl font-semibold tracking-tight text-white">
+                                <span className="truncate">{title}</span>
+                                {badge}
+                            </h1>
                             {description && <p className="mt-1 text-sm text-slate-400">{description}</p>}
                         </div>
-                        {actions && <div className="flex gap-2">{actions}</div>}
+                        {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
                     </div>
                     <div className="animate-fade-in">{children}</div>
                 </main>

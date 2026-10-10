@@ -34,6 +34,11 @@ class User extends Authenticatable
         return $this->role === UserRole::Admin;
     }
 
+    public function appNotifications(): HasMany
+    {
+        return $this->hasMany(AppNotification::class);
+    }
+
     public function auditLogs(): HasMany
     {
         return $this->hasMany(AuditLog::class);

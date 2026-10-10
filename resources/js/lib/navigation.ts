@@ -18,25 +18,23 @@ import {
 export interface NavItem {
     label: string;
     icon: LucideIcon;
-    /** Hazır olan sayfaların adresi. Henüz geliştirilmemiş modüllerde null. */
-    href: string | null;
-    /** Modülün planlandığı geliştirme aşaması (henüz hazır değilse). */
-    stage?: number;
+    href: string;
     adminOnly?: boolean;
+    count?: 'notifications' | 'comments';
 }
 
 export const navigation: NavItem[] = [
     { label: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
-    { label: 'Projelerim', icon: FolderKanban, href: null, stage: 3 },
-    { label: 'Sosyal Medya Hesapları', icon: Share2, href: null, stage: 3 },
-    { label: 'İçerik Oluştur', icon: PenSquare, href: null, stage: 4, adminOnly: true },
-    { label: 'Medya Kütüphanesi', icon: Images, href: null, stage: 4 },
-    { label: 'İçerik Takvimi', icon: CalendarDays, href: null, stage: 4 },
-    { label: 'Gönderiler', icon: FileText, href: null, stage: 4 },
-    { label: 'Yorumlar', icon: MessageSquare, href: null, stage: 8 },
-    { label: 'İstatistikler', icon: BarChart3, href: null, stage: 7 },
-    { label: 'Karşılaştırmalar', icon: GitCompareArrows, href: null, stage: 7 },
-    { label: 'Bildirimler', icon: Bell, href: null, stage: 8 },
+    { label: 'Projelerim', icon: FolderKanban, href: '/projects' },
+    { label: 'Sosyal Medya Hesapları', icon: Share2, href: '/accounts' },
+    { label: 'İçerik Oluştur', icon: PenSquare, href: '/posts/create', adminOnly: true },
+    { label: 'Medya Kütüphanesi', icon: Images, href: '/media' },
+    { label: 'İçerik Takvimi', icon: CalendarDays, href: '/calendar' },
+    { label: 'Gönderiler', icon: FileText, href: '/posts' },
+    { label: 'Yorumlar', icon: MessageSquare, href: '/comments', count: 'comments' },
+    { label: 'İstatistikler', icon: BarChart3, href: '/analytics' },
+    { label: 'Karşılaştırmalar', icon: GitCompareArrows, href: '/compare' },
+    { label: 'Bildirimler', icon: Bell, href: '/notifications', count: 'notifications' },
     { label: 'Kullanıcı Yönetimi', icon: Users, href: '/admin/users', adminOnly: true },
-    { label: 'Ayarlar', icon: Settings, href: null, stage: 5, adminOnly: true },
+    { label: 'Ayarlar', icon: Settings, href: '/settings', adminOnly: true },
 ];

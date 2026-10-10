@@ -38,6 +38,16 @@ return [
             'report' => false,
         ],
 
+        // Medya kütüphanesi: yerel diskte, web kökünün DIŞINDA. Dosyalar yalnızca yetkili
+        // kullanıcılara kontrollü rota üzerinden sunulur.
+        'media' => [
+            'driver' => 'local',
+            'root' => storage_path('app/media'),
+            'serve' => false,
+            'throw' => false,
+            'report' => false,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

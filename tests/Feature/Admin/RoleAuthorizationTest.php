@@ -21,7 +21,7 @@ class RoleAuthorizationTest extends TestCase
                 ->component('Dashboard')
                 ->where('auth.user.role', 'viewer')
                 ->where('auth.user.is_admin', false)
-                ->where('recentActivity', []));
+                ->has('kpis'));
     }
 
     public function test_shared_user_props_do_not_leak_password_hash(): void

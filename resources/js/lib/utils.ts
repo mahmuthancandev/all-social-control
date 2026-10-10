@@ -47,3 +47,75 @@ export function initials(name: string): string {
         .map((part) => part[0]?.toLocaleUpperCase('tr-TR'))
         .join('');
 }
+
+export function compactNumber(value: number | null | undefined): string {
+    if (value === null || value === undefined) return '—';
+    return new Intl.NumberFormat('tr-TR', { notation: 'compact', maximumFractionDigits: 1 }).format(value);
+}
+
+export function formatPercent(value: number | null | undefined, digits = 2): string {
+    if (value === null || value === undefined) return '—';
+    return `%${new Intl.NumberFormat('tr-TR', { maximumFractionDigits: digits }).format(value)}`;
+}
+
+export function signed(value: number | null | undefined, compact = false): string {
+    if (value === null || value === undefined) return '—';
+    const text = compact ? compactNumber(Math.abs(value)) : formatNumber(Math.abs(value));
+    return `${value > 0 ? '+' : value < 0 ? '−' : ''}${text}`;
+}
+
+export function percentChange(current: number | null | undefined, previous: number | null | undefined): number | null {
+    if (current === null || current === undefined || previous === null || previous === undefined || previous === 0) return null;
+    return ((current - previous) / previous) * 100;
+}
+
+export function formatBytes(bytes: number | null | undefined): string {
+    if (bytes === null || bytes === undefined) return '—';
+    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    let i = 0;
+    let n = bytes;
+    while (n >= 1024 && i < units.length - 1) {
+        n /= 1024;
+        i++;
+    }
+    return `${new Intl.NumberFormat('tr-TR', { maximumFractionDigits: i === 0 ? 0 : 1 }).format(n)} ${units[i]}`;
+}
+
+export function formatDuration(seconds: number | null | undefined): string {
+    if (seconds === null || seconds === undefined) return '—';
+    const s = Math.round(seconds);
+    const m = Math.floor(s / 60);
+    return `${m}:${String(s % 60).padStart(2, '0')}`;
+}
+
+export function formatDate(value: string | null | undefined, opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' }): string {
+    if (!value) return '—';
+    return new Intl.DateTimeFormat('tr-TR', { ...opts, timeZone: TZ }).format(new Date(value.length === 10 ? `${value}T12:00:00` : value));
+}
+
+export function formatTime(value: string | null | undefined): string {
+    if (!value) return '—';
+    return new Intl.DateTimeFormat('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: TZ }).format(new Date(value));
+}
+
+/** ISO zamanı Europe/Istanbul'a göre "YYYY-MM-DDTHH:mm" (datetime-local input) biçimine çevirir. */
+export function toLocalInput(value: string | null | undefined): string {
+    if (!value) return '';
+    const parts = new Intl.DateTimeFormat('sv-SE', {
+        year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', timeZone: TZ, hourCycle: 'h23',
+    }).format(new Date(value));
+    return parts.replace(' ', 'T');
+}
+
+/** Bir tarihin Europe/Istanbul'daki gün anahtarı (YYYY-MM-DD). */
+export function dayKey(value: string | Date): string {
+    return new Intl.DateTimeFormat('sv-SE', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: TZ }).format(new Date(value));
+}
+
+export function buildQuery(params: Record<string, string | number | null | undefined>): Record<string, string | number> {
+    const out: Record<string, string | number> = {};
+    for (const [k, v] of Object.entries(params)) {
+        if (v !== null && v !== undefined && v !== '') out[k] = v;
+    }
+    return out;
+}
