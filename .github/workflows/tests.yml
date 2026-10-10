@@ -1,0 +1,47 @@
+name: Testler
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_sqlite, sqlite3, mbstring, fileinfo, intl
+          coverage: none
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Bağımlılıklar
+        run: |
+          composer install --no-interaction --prefer-dist --no-progress
+          npm ci
+
+      - name: Ortam
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Kod stili
+        run: vendor/bin/pint --test
+
+      - name: TypeScript
+        run: npm run typecheck
+
+      - name: Frontend derleme
+        run: npm run build
+
+      - name: PHPUnit
+        run: php artisan test

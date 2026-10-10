@@ -1,0 +1,50 @@
+<?php
+
+return [
+    'accepted' => ':attribute kabul edilmelidir.',
+    'array' => ':attribute bir dizi olmalıdır.',
+    'boolean' => ':attribute alanı doğru veya yanlış olmalıdır.',
+    'confirmed' => ':attribute doğrulaması eşleşmiyor.',
+    'current_password' => 'Şifre hatalı.',
+    'date' => ':attribute geçerli bir tarih olmalıdır.',
+    'email' => ':attribute geçerli bir e-posta adresi olmalıdır.',
+    'enum' => 'Seçilen :attribute geçersiz.',
+    'exists' => 'Seçilen :attribute geçersiz.',
+    'file' => ':attribute bir dosya olmalıdır.',
+    'image' => ':attribute bir görsel olmalıdır.',
+    'in' => 'Seçilen :attribute geçersiz.',
+    'integer' => ':attribute tam sayı olmalıdır.',
+    'lowercase' => ':attribute küçük harflerden oluşmalıdır.',
+    'max' => [
+        'array' => ':attribute en fazla :max öğe içerebilir.',
+        'file' => ':attribute en fazla :max kilobayt olabilir.',
+        'numeric' => ':attribute en fazla :max olabilir.',
+        'string' => ':attribute en fazla :max karakter olabilir.',
+    ],
+    'mimes' => ':attribute şu türlerden biri olmalıdır: :values.',
+    'min' => [
+        'array' => ':attribute en az :min öğe içermelidir.',
+        'file' => ':attribute en az :min kilobayt olmalıdır.',
+        'numeric' => ':attribute en az :min olmalıdır.',
+        'string' => ':attribute en az :min karakter olmalıdır.',
+    ],
+    'nullable' => ':attribute boş bırakılabilir.',
+    'numeric' => ':attribute sayı olmalıdır.',
+    'password' => [
+        'letters' => ':attribute en az bir harf içermelidir.',
+        'mixed' => ':attribute en az bir büyük ve bir küçük harf içermelidir.',
+        'numbers' => ':attribute en az bir rakam içermelidir.',
+        'symbols' => ':attribute en az bir sembol içermelidir.',
+        'uncompromised' => 'Girilen :attribute bir veri sızıntısında görülmüş. Lütfen farklı bir :attribute seçin.',
+    ],
+    'required' => ':attribute alanı zorunludur.',
+    'string' => ':attribute metin olmalıdır.',
+    'unique' => ':attribute zaten kullanılıyor.',
+    'url' => ':attribute geçerli bir URL olmalıdır.',
+
+    'attributes' => [
+        'email' => 'e-posta',
+        'password' => 'şifre',
+        'name' => 'ad',
+    ],
+];

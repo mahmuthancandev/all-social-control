@@ -1,0 +1,54 @@
+@import 'tailwindcss';
+
+@source '../js/**/*.tsx';
+@source '../views/**/*.blade.php';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --font-sans: 'Inter', 'Segoe UI', ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+    --color-surface-950: #090b12;
+    --color-surface-900: #0f121b;
+    --color-surface-850: #141826;
+    --color-surface-800: #1a1f2e;
+    --color-surface-700: #252b3d;
+    --color-surface-600: #343b52;
+
+    --color-brand-300: #a5b4fc;
+    --color-brand-400: #818cf8;
+    --color-brand-500: #6366f1;
+    --color-brand-600: #4f46e5;
+
+    --animate-fade-in: fade-in 0.25s ease-out;
+    --animate-slide-up: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+    @keyframes fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slide-up {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+}
+
+@layer base {
+    html {
+        color-scheme: dark;
+    }
+
+    ::selection {
+        background: color-mix(in oklab, var(--color-brand-500) 40%, transparent);
+    }
+
+    *:focus-visible {
+        outline: 2px solid var(--color-brand-400);
+        outline-offset: 2px;
+    }
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--color-surface-700); border-radius: 8px; border: 2px solid var(--color-surface-950); }
+::-webkit-scrollbar-track { background: transparent; }
