@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\DateOnly;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -16,7 +17,7 @@ class AccountMetricSnapshot extends Model
 
     protected function casts(): array
     {
-        return ['captured_on' => 'date', 'is_demo' => 'boolean'];
+        return ['captured_on' => DateOnly::class, 'is_demo' => 'boolean'];
     }
 
     public function socialAccount(): BelongsTo

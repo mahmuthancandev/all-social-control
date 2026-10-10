@@ -38,8 +38,9 @@ try {
     Step 6 'Migration çalıştırılıyor'
     Run 'php' @('artisan', 'migrate', '--force')
 
-    Step 7 'Demo hesaplar oluşturuluyor'
+    Step 7 'Demo hesaplar ve DEMO etiketli örnek veriler oluşturuluyor'
     Run 'php' @('artisan', 'db:seed', '--force')
+    Write-Host '  (Demo verileri daha sonra Ayarlar > Demo veriler bölümünden tek tıkla silebilirsiniz.)'
 
     Step 8 'Frontend bağımlılıkları kuruluyor ve derleniyor'
     Run 'npm' @('install')

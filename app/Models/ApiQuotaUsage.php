@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\DateOnly;
 use Illuminate\Database\Eloquent\Model;
 
 class ApiQuotaUsage extends Model
@@ -10,6 +11,6 @@ class ApiQuotaUsage extends Model
 
     protected function casts(): array
     {
-        return ['usage_date' => 'date', 'units_used' => 'integer'];
+        return ['usage_date' => DateOnly::class, 'units_used' => 'integer'];
     }
 }
