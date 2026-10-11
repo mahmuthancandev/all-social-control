@@ -34,7 +34,7 @@ class Settings
         'x_api_enabled' => ['bool', false, false, 'X API kullanımı (ÜCRETLİ olabilir)'],
         'x_client_id' => ['string', false, null, 'X OAuth 2.0 Client ID'],
         'x_client_secret' => ['string', true, null, 'X OAuth 2.0 Client Secret'],
-        'oauth_redirect_base_url' => ['string', false, null, 'OAuth yönlendirme adresi tabanı'],
+        'oauth_redirect_base_url' => ['string', false, null, 'Instagram/TikTok için https yönlendirme tabanı (köprü)'],
     ];
 
     private const CACHE_KEY = 'socialhub.settings';

@@ -102,7 +102,7 @@ export default function SettingsIndex({ settings, platforms, quota, system }: Pr
                         <CardHeader title="Gelişmiş" />
                         <div className="grid gap-4 p-5 sm:grid-cols-2">
                             {field('oauth_redirect_base_url')}
-                            <p className="text-xs text-slate-500 sm:pt-7">Boşsa {system.app_url} kullanılır. Instagram/TikTok https zorunlu tutarsa, kendi sahip olduğunuz bir https adresi girin. Yerel geliştirme sunucusunu internete açmayın.</p>
+                            <p className="text-xs text-slate-500 sm:pt-7">Instagram ve TikTok yalnızca https yönlendirme kabul eder. Projedeki <code>oauth-bridge</code> klasörünü ücretsiz GitHub Pages'e yükleyip adresini (ör. https://kullanici.github.io/socialhub-oauth) buraya girin. YouTube ve X her zaman {system.app_url} adresine döner. Paneli her zaman http://127.0.0.1:8000 ile açın.</p>
                         </div>
                     </Card>
                     <div className="sticky bottom-4 flex justify-end">

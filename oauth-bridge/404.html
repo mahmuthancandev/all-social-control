@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>SocialHub yönlendirme</title>
+<style>body{font-family:system-ui,Segoe UI,sans-serif;background:#0f121b;color:#e2e8f0;display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0}main{max-width:32rem;padding:2rem;text-align:center}a{color:#a5b4fc}</style>
+</head>
+<body>
+<main>
+<h1>SocialHub'a yönlendiriliyorsunuz…</h1>
+<p id="msg">Bu sayfa yalnızca bir köprüdür: Instagram/TikTok'un https zorunluluğu nedeniyle, yetkilendirme yanıtını bilgisayarınızdaki SocialHub paneline (127.0.0.1) iletir. Hiçbir veri saklanmaz.</p>
+</main>
+<script>
+(function () {
+  // SocialHub'ın yerel adresi. Paneli farklı portta çalıştırıyorsanız burayı değiştirin.
+  var LOCAL = 'http://127.0.0.1:8000';
+  var m = location.pathname.match(/\/oauth\/(youtube|instagram|tiktok|x)\/callback\/?$/);
+  if (!m) {
+    document.getElementById('msg').textContent = 'Geçersiz yönlendirme adresi. Beklenen biçim: …/oauth/instagram/callback';
+    return;
+  }
+  // Yalnızca sorgu parametreleri (code, state, error) yerel panele aktarılır.
+  var target = LOCAL + '/oauth/' + m[1] + '/callback' + location.search;
+  document.getElementById('msg').innerHTML = 'Otomatik yönlendirilmezseniz <a id="go">buraya tıklayın</a>. SocialHub (start.bat) çalışıyor olmalı.';
+  document.getElementById('go').href = target;
+  location.replace(target);
+})();
+</script>
+</body>
+</html>

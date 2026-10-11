@@ -61,7 +61,7 @@ class SettingsController extends Controller
             'x_api_enabled' => ['nullable', 'boolean'],
             'x_client_id' => ['nullable', 'string', 'max:255'],
             'x_client_secret' => ['nullable', 'string', 'max:255'],
-            'oauth_redirect_base_url' => ['nullable', 'url', 'max:500'],
+            'oauth_redirect_base_url' => ['nullable', 'url:https', 'max:500'],
         ];
         $data = $request->validate($rules);
 
