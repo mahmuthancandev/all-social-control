@@ -21,6 +21,16 @@ if (-not (Test-Path '.env')) {
     exit 1
 }
 
+# Zaten çalışıyorsa ikinci kopyayı açma (pencere birikmesini önler).
+$inUse = $false
+try { $inUse = [bool](Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction Stop) } catch { $inUse = $false }
+if ($inUse) {
+    Write-Host "Port $Port zaten kullanımda: SocialHub büyük ihtimalle zaten çalışıyor." -ForegroundColor Yellow
+    Write-Host 'Yeniden başlatmak için önce stop.bat çalıştırın.'
+    Start-Process "http://127.0.0.1:$Port"
+    exit 0
+}
+
 if (-not (Test-Path 'public\build\manifest.json')) {
     Write-Host 'Frontend derlenmemiş, derleniyor...' -ForegroundColor Yellow
     & npm run build
@@ -37,13 +47,16 @@ $procs = @(
     @{ Title = 'SocialHub - Scheduler'; Cmd = 'php artisan schedule:work' }
 )
 
+$pidFile = Join-Path $Root 'storage\app\socialhub-pids.txt'
+Remove-Item -LiteralPath $pidFile -Force -ErrorAction SilentlyContinue
 foreach ($p in $procs) {
-    Start-Process -FilePath 'cmd.exe' -ArgumentList '/k', "chcp 65001 >nul && title $($p.Title) && cd /d `"$Root`" && $($p.Cmd)" -WindowStyle Minimized
+    $proc = Start-Process -FilePath 'cmd.exe' -ArgumentList '/k', "chcp 65001 >nul && title $($p.Title) && cd /d `"$Root`" && $($p.Cmd)" -WindowStyle Minimized -PassThru
+    Add-Content -LiteralPath $pidFile -Value $proc.Id
 }
 
 Start-Sleep -Seconds 2
 $url = "http://127.0.0.1:$Port"
 Write-Host "`nSocialHub çalışıyor: $url" -ForegroundColor Green
-Write-Host 'Durdurmak için açılan "SocialHub - ..." pencerelerini kapatın veya stop.bat çalıştırın.'
+Write-Host 'Durdurmak için stop.bat çalıştırın.'
 Write-Host 'Not: Bilgisayar kapalıyken veya bu pencereler kapalıyken zamanlanmış paylaşımlar çalışmaz.' -ForegroundColor Yellow
 Start-Process $url
