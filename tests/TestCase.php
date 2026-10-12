@@ -21,6 +21,9 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
         Cache::flush();
+
+        // Testler derlenmiş frontend'e (public/build) bağımlı olmasın.
+        $this->withoutVite();
     }
 
     protected function admin(): User

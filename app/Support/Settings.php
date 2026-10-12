@@ -34,7 +34,7 @@ class Settings
         'x_api_enabled' => ['bool', false, false, 'X API kullanımı (ÜCRETLİ olabilir)'],
         'x_client_id' => ['string', false, null, 'X OAuth 2.0 Client ID'],
         'x_client_secret' => ['string', true, null, 'X OAuth 2.0 Client Secret'],
-        'oauth_redirect_base_url' => ['string', false, null, 'Instagram/TikTok için https yönlendirme tabanı (köprü)'],
+        'oauth_redirect_base_url' => ['string', false, null, 'Instagram/TikTok için https yönlendirme tabanı (yalnızca yerel kurulumda köprü)'],
     ];
 
     private const CACHE_KEY = 'socialhub.settings';
@@ -45,7 +45,7 @@ class Settings
         $all = self::all();
 
         if (! array_key_exists($key, $all) || $all[$key] === null || $all[$key] === '') {
-            $envValue = env('SOCIALHUB_'.strtoupper($key));
+            $envValue = config('socialhub.settings_env.'.$key);
             if ($envValue !== null && $envValue !== '') {
                 return self::cast($envValue, $definition[0] ?? 'string');
             }

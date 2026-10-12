@@ -12,6 +12,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OAuthController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\PublicMediaController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SocialAccountController;
@@ -19,6 +20,11 @@ use App\Http\Controllers\TargetController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/dashboard');
+
+// Instagram (Meta) medyayı indirebilsin diye süreli, imzalı adres. Giriş gerektirmez; imza/süre geçersizse 403.
+Route::get('/public-media/{media}', PublicMediaController::class)
+    ->middleware(['signed', 'throttle:120,1'])
+    ->name('public-media.show');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');

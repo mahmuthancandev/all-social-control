@@ -9,6 +9,7 @@ use App\Models\AccountCredential;
 use App\Models\Comment;
 use App\Models\PostPlatformTarget;
 use App\Models\SocialAccount;
+use App\Services\Media\PublicMediaUrl;
 use App\Services\Platforms\AbstractPlatformService;
 use App\Services\Platforms\Data\CapabilitySet;
 use App\Services\Platforms\Data\ProfileData;
@@ -26,9 +27,9 @@ use Throwable;
  * Instagram API with Instagram Login (graph.instagram.com) — resmi ve ücretsiz.
  * Yalnızca Profesyonel (İşletme/İçerik Üreticisi) hesaplarda çalışır.
  *
- * Yayınlama için Meta, medyayı herkese açık bir URL'den kendisi indirir. Yerel bilgisayardaki
- * dosyalar internete açık olmadığından, "herkese açık medya URL tabanı" ayarlanmadıkça
- * otomatik yayın kapalıdır ve Paylaşım Asistanı kullanılır.
+ * Yayınlama için Meta, medyayı herkese açık bir URL'den kendisi indirir. Panel https alan adıyla
+ * (VPS) çalışıyorsa süreli imzalı adres üretilir; yerel kurulumda "herkese açık medya URL tabanı"
+ * ayarlanmadıkça otomatik yayın kapalıdır ve Paylaşım Asistanı kullanılır (bkz. PublicMediaUrl).
  */
 class InstagramService extends AbstractPlatformService
 {
@@ -130,10 +131,10 @@ class InstagramService extends AbstractPlatformService
         $has = fn (string $s) => in_array($s, $scopes, true);
         $basic = $has('instagram_business_basic');
         $publish = $has('instagram_business_content_publish');
-        $publicUrl = Settings::has('instagram_public_media_base_url');
+        $publicUrl = PublicMediaUrl::available();
         $publishReason = ! $publish
             ? 'instagram_business_content_publish izni verilmedi.'
-            : ($publicUrl ? null : 'Meta medyayı herkese açık URL\'den indirir; Ayarlar\'da "herkese açık medya URL tabanı" tanımlı değil. Paylaşım Asistanı kullanılır.');
+            : ($publicUrl ? null : PublicMediaUrl::unavailableReason());
 
         return (new CapabilitySet)
             ->set(Capability::ReadFollowers, $basic, $basic ? null : 'instagram_business_basic izni verilmedi.')
@@ -237,18 +238,17 @@ class InstagramService extends AbstractPlatformService
     {
         $account = $target->socialAccount;
         $media = $target->mediaFile ?? throw new PlatformException('Instagram gönderisi için medya gerekli.');
-        $base = rtrim((string) Settings::get('instagram_public_media_base_url'), '/');
-        if ($base === '') {
-            throw new NotConfiguredException('Herkese açık medya URL tabanı ayarlanmamış.');
+        if (! PublicMediaUrl::available()) {
+            throw new NotConfiguredException(PublicMediaUrl::unavailableReason());
         }
-        $publicUrl = $base.'/'.ltrim($media->path, '/');
+        $publicUrl = PublicMediaUrl::for($media);
         $caption = mb_substr($target->fullCaption(), 0, 2200);
 
         $params = ['caption' => $caption];
         if ($media->type === 'video') {
             $params += ['media_type' => 'REELS', 'video_url' => $publicUrl, 'share_to_feed' => 'true'];
             if ($target->thumbnail) {
-                $params['cover_url'] = $base.'/'.ltrim($target->thumbnail->path, '/');
+                $params['cover_url'] = PublicMediaUrl::for($target->thumbnail);
             }
         } else {
             $params['image_url'] = $publicUrl;
